@@ -8,7 +8,9 @@ namespace PeopleManager.Ui.Mvc.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            PeopleController persons = new PeopleController();
+            var people = persons.GetPeople();
+            return View(people);
         }
 
         public IActionResult Privacy()
@@ -20,6 +22,8 @@ namespace PeopleManager.Ui.Mvc.Controllers
         {
             return View();
         }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

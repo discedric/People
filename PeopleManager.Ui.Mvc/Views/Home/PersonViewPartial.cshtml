@@ -1,0 +1,14 @@
+﻿@model Person
+
+@{
+    Person p = Model;
+}
+<div class="card border-primary mb-3">
+    <div class="card-header">
+        @p.FirstName @p.LastName
+    </div>
+    <div class="card-body">
+        <p class="card-text">Email me!</p>
+        <p class="card-text"><a href="mailto:@p.Email">@p.Email</a></p>
+    </div>
+</div>

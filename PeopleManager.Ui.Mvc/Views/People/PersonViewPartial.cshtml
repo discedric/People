@@ -1,0 +1,10 @@
+﻿@model Person
+
+@{
+    Person p = Model;
+}
+<tr>
+    <td>@p.FirstName</td>
+    <td>@p.LastName</td>
+    <td><a href="mailto:@p.Email">@p.Email</a></td>
+</tr>

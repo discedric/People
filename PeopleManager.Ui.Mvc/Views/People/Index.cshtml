@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IList<Person>
+@{
     ViewData["Title"] = "People List";
 }
 
@@ -11,20 +12,9 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>John</td>
-            <td>Doe</td>
-            <td>johndoe@example.com</td>
-        </tr>
-        <tr>
-            <td>Jane</td>
-            <td>Smith</td>
-            <td>janesmith@example.com</td>
-        </tr>
-        <tr>
-            <td>Emily</td>
-            <td>Johnson</td>
-            <td>emilyjohnson@example.com</td>
-        </tr>
+    @foreach (var p in Model)
+    {
+        <partial name="PersonViewPartial" model="p"/>
+    }
     </tbody>
 </table>

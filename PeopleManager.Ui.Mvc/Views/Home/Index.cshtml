@@ -1,8 +1,23 @@
-﻿@{
+﻿@model IList<Person>
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div>
+    <div class="text-center">
+        <h1>Eployee of the Month!</h1>
+        <partial name="PersonViewPartial" model="Model[0]" />
+    </div>
+
+    <div class="card-deck">
+        <h2>Employees list</h2>
+        <div class="row">
+            @foreach (var p in Model)
+            {
+                <div class="col-md-4">
+                    <partial name="PersonViewPartial" model="p" />
+                </div>
+            }
+        </div>
+    </div>
 </div>
