@@ -6,7 +6,8 @@
 <div>
     <div class="text-center">
         <h1>Eployee of the Month!</h1>
-        <partial name="PersonViewPartial" model="Model[0]" />
+        @if (Model.Any())
+        { <partial name="PersonViewPartial" model="Model[0]" /> }
     </div>
 
     <div class="card-deck">

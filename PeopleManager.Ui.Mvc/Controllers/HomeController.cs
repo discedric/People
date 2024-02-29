@@ -1,16 +1,22 @@
 using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Ui.Mvc.Models;
 using System.Diagnostics;
+using PeopleManager.Ui.Mvc.Core;
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly Database _database;
+
+        public HomeController(Database database)
+        {
+            _database = database;
+        }
+
         public IActionResult Index()
         {
-            PeopleController persons = new PeopleController();
-            var people = persons.GetPeople();
-            return View(people);
+            return View(_database.People);
         }
 
         public IActionResult Privacy()
@@ -22,8 +28,6 @@ namespace PeopleManager.Ui.Mvc.Controllers
         {
             return View();
         }
-
-
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
