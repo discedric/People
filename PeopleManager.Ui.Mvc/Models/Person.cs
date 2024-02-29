@@ -1,9 +1,10 @@
 ﻿namespace PeopleManager.Ui.Mvc.Models
 {
-    public class Person(string firstname,string lastname,string? email = null)
+    public class Person
     {
-        public string FirstName { get; set; } = firstname;
-        public string LastName { get; set; } = lastname;
-        public string? Email { get; set; } = email;
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string? Email { get; set; }
     }
 }
