@@ -1,0 +1,18 @@
+﻿@model Organization
+@{
+    ViewData["Title"] = "Create Organization";
+}
+
+<h2>@ViewBag.title</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="form-label">Name</label>
+        <input asp-for="Name" class="form-control">
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="form-label">Last name</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

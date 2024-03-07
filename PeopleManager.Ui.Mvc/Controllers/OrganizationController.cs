@@ -5,54 +5,51 @@ using PeopleManager.Ui.Mvc.Models;
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
-    public class PeopleController : Controller
+    public class OrganizationController : Controller
     {
         private readonly PeopleManagerDbContext _DbContext;
-        public PeopleController(PeopleManagerDbContext peopleManagerDbContext)
+        public OrganizationController(PeopleManagerDbContext DbContext)
         {
-            _DbContext = peopleManagerDbContext;
+            _DbContext = DbContext;
         }
         [HttpGet]
         public IActionResult Index()
         {
-            var people = _DbContext.People
-                .Include(p => p.Organization);
-            return View(people.ToList());
+            var organization = _DbContext.Organizations;
+            return View(organization.ToList());
         }
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
-
         [HttpPost]
-        public IActionResult Create(Person person)
+        public IActionResult Create(Organization organization)
         {
-            _DbContext.People.Add(person);
+            _DbContext.Organizations.Add(organization);
             _DbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
-
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var person = _DbContext.People.FirstOrDefault(p => p.Id == id);
-            if (person == null)
+            var organization = _DbContext.Organizations.FirstOrDefault(p => p.Id == id);
+            if (organization == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            return View(person);
+            return View(organization);
         }
 
         [HttpPost]
-        public IActionResult Edit(Person person)
+        public IActionResult Edit(Organization organ)
         {
-            var dbPerson = _DbContext.People.FirstOrDefault(p => p.Id == person.Id);
-            if (dbPerson == null)
+            /*var dborganizaton = _DbContext.Organizations.FirstOrDefault(p => p.Id == organ.Id);
+            if (dborganizaton == null)
             {
                 return RedirectToAction(nameof(Index));
-            }
-            _DbContext.People.Update(person);
+            }*/
+            _DbContext.Organizations.Update(organ);
             _DbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
         }
@@ -60,24 +57,23 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var person = _DbContext.People.FirstOrDefault(p => p.Id == id);
-            if (person == null)
+            var organization = _DbContext.Organizations.FirstOrDefault(p => p.Id == id);
+            if (organization == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-
-            return View(person);
+            return View(organization);
         }
 
         [HttpPost("/{Controller}/Delete/{id:int}"), ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed([FromRoute] int id)
         {
-            var p = _DbContext.People.FirstOrDefault(p => p.Id == id);
-            if (p == null)
+            var org = _DbContext.Organizations.FirstOrDefault(o => o.Id == id);
+            if (org == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            _DbContext.People.Remove(p);
+            _DbContext.Organizations.Remove(org);
             _DbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
         }

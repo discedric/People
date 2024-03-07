@@ -1,0 +1,18 @@
+﻿@model Organization
+
+@{
+    Organization o = Model;
+}
+<tr>
+    <td>@o.Name</td>
+    <td>
+        @if (o.Description != null)
+        {
+            @o.Description
+        }
+    </td>
+    <td>
+        <a asp-action="Edit" asp-route-id="@o.Id" class="btn btn-primary">Edit</a> |
+        <a asp-action="Delete" asp-route-id="@o.Id" class="btn btn-primary">Delete</a>
+    </td>
+</tr>

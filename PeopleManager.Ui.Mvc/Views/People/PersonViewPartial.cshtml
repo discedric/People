@@ -7,4 +7,18 @@
     <td>@p.FirstName</td>
     <td>@p.LastName</td>
     <td><a href="mailto:@p.Email">@p.Email</a></td>
+    <td>
+        @if (p.Organization != null)
+        {
+            @p.Organization.Name
+        }
+        else
+        {
+            @: No organization assigned.;
+        }
+    </td>
+    <td>
+        <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-primary">Edit</a> |
+        <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-primary">Delete</a>
 </tr>
+
