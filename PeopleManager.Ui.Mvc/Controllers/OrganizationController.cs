@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PeopleManager.Ui.Mvc.Core;
-using PeopleManager.Ui.Mvc.Models;
+using PeopleManager.Core;
+using PeopleManager.Model;
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
@@ -24,8 +23,13 @@ namespace PeopleManager.Ui.Mvc.Controllers
             return View();
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Organization organization)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(organization);
+            }
             _DbContext.Organizations.Add(organization);
             _DbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
@@ -42,6 +46,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(Organization organ)
         {
             /*var dborganizaton = _DbContext.Organizations.FirstOrDefault(p => p.Id == organ.Id);
@@ -49,6 +54,10 @@ namespace PeopleManager.Ui.Mvc.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }*/
+            if (!ModelState.IsValid)
+            {
+                return View(organ);
+            }
             _DbContext.Organizations.Update(organ);
             _DbContext.SaveChanges();
             return RedirectToAction(nameof(Index));

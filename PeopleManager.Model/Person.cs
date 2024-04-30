@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace PeopleManager.Ui.Mvc.Models
+namespace PeopleManager.Model
 {
     public class Person
     {
         public int Id { get; set; }
         [DisplayName("First Name")]
+        [Required]
         public string FirstName { get; set; }
         [DisplayName("Last Name")]
         public string LastName { get; set; }

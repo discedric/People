@@ -1,4 +1,5 @@
-﻿@model Organization
+﻿@using PeopleManager.Model;
+@model Organization
 @{
     ViewData["Title"] = "Create Organization";
 }
@@ -9,10 +10,16 @@
     <div class="form-group">
         <label asp-for="Name" class="form-label">Name</label>
         <input asp-for="Name" class="form-control">
+        <span asp-validation-for="Name"></span>
     </div>
     <div class="form-group">
         <label asp-for="Description" class="form-label">Last name</label>
         <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description"></span>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

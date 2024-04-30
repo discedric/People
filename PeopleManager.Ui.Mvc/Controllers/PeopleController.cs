@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PeopleManager.Ui.Mvc.Core;
-using PeopleManager.Ui.Mvc.Models;
+using PeopleManager.Core;
+using PeopleManager.Model;
+
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
@@ -22,12 +23,16 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            return createActionView();
         }
 
         [HttpPost]
         public IActionResult Create(Person person)
         {
+            if (!ModelState.IsValid)
+            {
+                return createActionView(person);
+            }
             _DbContext.People.Add(person);
             _DbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
@@ -36,6 +41,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
+            ViewBag.Organizations = _DbContext.Organizations.ToList();
             var person = _DbContext.People.FirstOrDefault(p => p.Id == id);
             if (person == null)
             {
@@ -47,10 +53,9 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpPost]
         public IActionResult Edit(Person person)
         {
-            var dbPerson = _DbContext.People.FirstOrDefault(p => p.Id == person.Id);
-            if (dbPerson == null)
+            if (!ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                return createActionView(person);
             }
             _DbContext.People.Update(person);
             _DbContext.SaveChanges();
@@ -69,9 +74,10 @@ namespace PeopleManager.Ui.Mvc.Controllers
             return View(person);
         }
 
-        [HttpPost("/{Controller}/Delete/{id:int}"), ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed([FromRoute] int id)
+        [HttpPost("/{Controller}/Delete/{routeid:int?}"), ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed([FromForm] int formid, [FromRoute] int routeid)
         {
+            int id = formid == 0 ? routeid : formid;
             var p = _DbContext.People.FirstOrDefault(p => p.Id == id);
             if (p == null)
             {
@@ -80,6 +86,12 @@ namespace PeopleManager.Ui.Mvc.Controllers
             _DbContext.People.Remove(p);
             _DbContext.SaveChanges();
             return RedirectToAction(nameof(Index));
+        }
+
+        private ViewResult createActionView(Person? person = null)
+        {
+            ViewBag.Organizations = _DbContext.Organizations.ToList();
+            return View(person);
         }
     }
 }
