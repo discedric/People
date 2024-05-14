@@ -1,23 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ASP;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeopleManager.Core;
 using PeopleManager.Model;
+using PeopleManager.Services;
 
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
     public class PeopleController : Controller
     {
-        private readonly PeopleManagerDbContext _DbContext;
-        public PeopleController(PeopleManagerDbContext peopleManagerDbContext)
+        private readonly PersonService _personService;
+        private readonly OrganizationService _organizationService;
+        public PeopleController(PersonService personService, OrganizationService organizationService)
         {
-            _DbContext = peopleManagerDbContext;
+            _personService = personService;
+            _organizationService = organizationService;
         }
         [HttpGet]
         public IActionResult Index()
         {
-            var people = _DbContext.People
-                .Include(p => p.Organization);
+            var people = _personService.Find();
             return View(people.ToList());
         }
         [HttpGet]
@@ -33,16 +36,17 @@ namespace PeopleManager.Ui.Mvc.Controllers
             {
                 return createActionView(person);
             }
-            _DbContext.People.Add(person);
-            _DbContext.SaveChanges();
+
+            _personService.Create(person);
+
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            ViewBag.Organizations = _DbContext.Organizations.ToList();
-            var person = _DbContext.People.FirstOrDefault(p => p.Id == id);
+            ViewBag.Organizations = _organizationService.Find();
+            var person = _personService.Get(id);
             if (person == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -57,15 +61,16 @@ namespace PeopleManager.Ui.Mvc.Controllers
             {
                 return createActionView(person);
             }
-            _DbContext.People.Update(person);
-            _DbContext.SaveChanges();
+
+            _personService.Update(person.Id, person);
+
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var person = _DbContext.People.FirstOrDefault(p => p.Id == id);
+            var person = _personService.Get(id);
             if (person == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -74,17 +79,15 @@ namespace PeopleManager.Ui.Mvc.Controllers
             return View(person);
         }
 
-        [HttpPost("/{Controller}/Delete/{routeid:int?}"), ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed([FromForm] int formid, [FromRoute] int routeid)
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult DeleteConfirmed([FromForm] int id)
         {
-            int id = formid == 0 ? routeid : formid;
-            var p = _DbContext.People.FirstOrDefault(p => p.Id == id);
-            if (p == null)
+            var person = _personService.Get(id);
+            if (person == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            _DbContext.People.Remove(p);
-            _DbContext.SaveChanges();
+            _personService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 

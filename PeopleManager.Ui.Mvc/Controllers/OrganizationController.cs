@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PeopleManager.Core;
 using PeopleManager.Model;
+using PeopleManager.Services;
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
     public class OrganizationController : Controller
     {
-        private readonly PeopleManagerDbContext _DbContext;
-        public OrganizationController(PeopleManagerDbContext DbContext)
+        private readonly OrganizationService _organizationService;
+        public OrganizationController(OrganizationService organizationService)
         {
-            _DbContext = DbContext;
+            _organizationService = organizationService;
         }
-        [HttpGet]
         public IActionResult Index()
         {
-            var organization = _DbContext.Organizations;
+            var organization = _organizationService.Find();
             return View(organization.ToList());
         }
         [HttpGet]
@@ -30,14 +30,13 @@ namespace PeopleManager.Ui.Mvc.Controllers
             {
                 return View(organization);
             }
-            _DbContext.Organizations.Add(organization);
-            _DbContext.SaveChanges();
+            _organizationService.Create(organization);
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var organization = _DbContext.Organizations.FirstOrDefault(p => p.Id == id);
+            var organization = _organizationService.Get(id);
             if (organization == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -49,24 +48,18 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Organization organ)
         {
-            /*var dborganizaton = _DbContext.Organizations.FirstOrDefault(p => p.Id == organ.Id);
-            if (dborganizaton == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }*/
             if (!ModelState.IsValid)
             {
                 return View(organ);
             }
-            _DbContext.Organizations.Update(organ);
-            _DbContext.SaveChanges();
+            _organizationService.Update(organ.Id, organ);
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            var organization = _DbContext.Organizations.FirstOrDefault(p => p.Id == id);
+            var organization = _organizationService.Get(id);
             if (organization == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -77,13 +70,12 @@ namespace PeopleManager.Ui.Mvc.Controllers
         [HttpPost("/{Controller}/Delete/{id:int}"), ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed([FromRoute] int id)
         {
-            var org = _DbContext.Organizations.FirstOrDefault(o => o.Id == id);
+            var org = _organizationService.Get(id);
             if (org == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            _DbContext.Organizations.Remove(org);
-            _DbContext.SaveChanges();
+            _organizationService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
     }
