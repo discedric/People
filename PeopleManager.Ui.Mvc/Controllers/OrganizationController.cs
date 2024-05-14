@@ -1,89 +1,87 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PeopleManager.Core;
-using PeopleManager.Model;
+﻿using System.Runtime.InteropServices.JavaScript;
+using Microsoft.AspNetCore.Mvc;
+using PeopleManager.Dto.Filters;
+using PeopleManager.Dto.Organization;
+using PeopleManager.Sdk;
+using Vives.Services.Model;
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
-    public class OrganizationController : Controller
+    public class OrganizationController(OrganizationSdk organizationService) : Controller
     {
-        private readonly PeopleManagerDbContext _DbContext;
-        public OrganizationController(PeopleManagerDbContext DbContext)
+        private readonly OrganizationSdk _organizationService = organizationService;
+        public async Task<IActionResult> Index([FromQuery]Paging paging, [FromQuery]OrganizationFilter? filter)
         {
-            _DbContext = DbContext;
-        }
-        [HttpGet]
-        public IActionResult Index()
-        {
-            var organization = _DbContext.Organizations;
+            var organization = await _organizationService.Find(paging, filter);
             return View(organization.ToList());
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Organization organization)
+        public async Task<IActionResult> Create(OrganizationRequests organization)
         {
             if (!ModelState.IsValid)
             {
                 return View(organization);
             }
-            _DbContext.Organizations.Add(organization);
-            _DbContext.SaveChanges();
+            var result = await _organizationService.Create(organization);
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var organization = _DbContext.Organizations.FirstOrDefault(p => p.Id == id);
-            if (organization == null)
+            var organization = await _organizationService.Get(id);
+            if (!organization.IsSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            return View(organization);
+            return View(organization.Data);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Organization organ)
+        public async Task<IActionResult> Edit(OrganizationResult organ)
         {
-            /*var dborganizaton = _DbContext.Organizations.FirstOrDefault(p => p.Id == organ.Id);
-            if (dborganizaton == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }*/
             if (!ModelState.IsValid)
             {
                 return View(organ);
             }
-            _DbContext.Organizations.Update(organ);
-            _DbContext.SaveChanges();
+            var result = await _organizationService.Update(organ.Id, new OrganizationRequests
+            {
+                Name = organ.Name,
+                Description = organ.Description
+            });
+            if (!result.IsSuccess)
+            {
+                return View(organ);
+            }
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var organization = _DbContext.Organizations.FirstOrDefault(p => p.Id == id);
+            var organization = await _organizationService.Get(id);
             if (organization == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-            return View(organization);
+            return View(organization.Data);
         }
 
         [HttpPost("/{Controller}/Delete/{id:int}"), ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed([FromRoute] int id)
+        public async Task<IActionResult> DeleteConfirmed([FromRoute] int id)
         {
-            var org = _DbContext.Organizations.FirstOrDefault(o => o.Id == id);
-            if (org == null)
+            var org = await _organizationService.Get(id);
+            if (org.IsSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            _DbContext.Organizations.Remove(org);
-            _DbContext.SaveChanges();
+            await _organizationService.Delete(org.Data.Id);
             return RedirectToAction(nameof(Index));
         }
     }

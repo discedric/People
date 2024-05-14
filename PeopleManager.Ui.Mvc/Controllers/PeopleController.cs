@@ -1,96 +1,106 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PeopleManager.Core;
-using PeopleManager.Model;
+using PeopleManager.Dto.Filters;
+using PeopleManager.Dto.Person;
+using PeopleManager.Sdk;
+using Vives.Services.Model;
 
 
 namespace PeopleManager.Ui.Mvc.Controllers
 {
-    public class PeopleController : Controller
+    public class PeopleController(PeopleSdk peopleService, OrganizationSdk organizationService) : Controller
     {
-        private readonly PeopleManagerDbContext _DbContext;
-        public PeopleController(PeopleManagerDbContext peopleManagerDbContext)
-        {
-            _DbContext = peopleManagerDbContext;
-        }
+        private readonly PeopleSdk _peopleService = peopleService;
+        private readonly OrganizationSdk _organizationService = organizationService;
+
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index([FromQuery]Paging paging, [FromQuery]PersonFilter? filter, [FromQuery]Sorting? sorting)
         {
-            var people = _DbContext.People
-                .Include(p => p.Organization);
+            var people = await _peopleService.Find(paging, filter, sorting);
             return View(people.ToList());
         }
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return createActionView();
+            return await createActionView(new PersonRequests{FirstName = "",LastName = ""});
         }
 
         [HttpPost]
-        public IActionResult Create(Person person)
+        public async Task<IActionResult> Create(PersonRequests person)
         {
             if (!ModelState.IsValid)
             {
-                return createActionView(person);
+                return await createActionView(person);
             }
-            _DbContext.People.Add(person);
-            _DbContext.SaveChanges();
+
+            var result = _peopleService.Create(person).Result;
+
+            if (!result.IsSuccess)
+            {
+                return await createActionView(person);
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            ViewBag.Organizations = _DbContext.Organizations.ToList();
-            var person = _DbContext.People.FirstOrDefault(p => p.Id == id);
-            if (person == null)
+            var organizationresult = await _organizationService.Find(new Paging {Limit = 1000});
+            ViewBag.Organizations = organizationresult;
+            var person = await _peopleService.Get(id);
+            if (!person.IsSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            return View(person);
+            return View(person.Data);
         }
 
         [HttpPost]
-        public IActionResult Edit(Person person)
+        public async Task<IActionResult> Edit(PersonResults person)
         {
             if (!ModelState.IsValid)
             {
-                return createActionView(person);
+                return await createActionView(person);
             }
-            _DbContext.People.Update(person);
-            _DbContext.SaveChanges();
+
+            var result = _peopleService.Update(person.Id, new PersonRequests
+            {
+                FirstName = person.FirstName,
+                LastName = person.LastName,
+                Email = person.Email,
+                OrganizationId = person.OrganizationId
+            });
+
             return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var person = _DbContext.People.FirstOrDefault(p => p.Id == id);
-            if (person == null)
+            var person = await _peopleService.Get(id);
+            if (!person.IsSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(person);
+            return View(person.Data);
         }
 
-        [HttpPost("/{Controller}/Delete/{routeid:int?}"), ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed([FromForm] int formid, [FromRoute] int routeid)
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed([FromForm] int id)
         {
-            int id = formid == 0 ? routeid : formid;
-            var p = _DbContext.People.FirstOrDefault(p => p.Id == id);
-            if (p == null)
+            var person = await _peopleService.Get(id);
+            if (!person.IsSuccess)
             {
                 return RedirectToAction(nameof(Index));
             }
-            _DbContext.People.Remove(p);
-            _DbContext.SaveChanges();
+            var result = await _peopleService.Delete(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private ViewResult createActionView(Person? person = null)
+        private async Task<ViewResult> createActionView<T>(T? person)
         {
-            ViewBag.Organizations = _DbContext.Organizations.ToList();
+            ViewBag.Organizations = await _organizationService.Find(new Paging {Limit = 1000});
             return View(person);
         }
     }

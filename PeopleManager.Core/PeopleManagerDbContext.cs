@@ -1,15 +1,24 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PeopleManager.Model;
 
 namespace PeopleManager.Core
 {
-    public class PeopleManagerDbContext(DbContextOptions<PeopleManagerDbContext> options) : DbContext(options)
+    public class PeopleManagerDbContext(DbContextOptions<PeopleManagerDbContext> options) : IdentityDbContext(options)
     {
         public DbSet<Person> People => Set<Person>();
         public DbSet<Organization> Organizations => Set<Organization>();
 
         public void Seed()
         {
+            var identityUser = new IdentityUser
+            {
+                UserName = "Admin",
+                Email = "admin@admin",
+                PasswordHash = "Admin"
+            };
+
             var vivesOrg = new Organization()
             {
                 Name = "Vives international collage"

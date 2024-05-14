@@ -6,8 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.1" />
+	</ItemGroup>
+
   <ItemGroup>
+    <ProjectReference Include="..\PeopleManager.Configuration\PeopleManager.Configuration.csproj" />
     <ProjectReference Include="..\PeopleManager.Core\PeopleManager.Core.csproj" />
+    <ProjectReference Include="..\PeopleManager.Dto\PeopleManager.Dto.csproj" />
+    <ProjectReference Include="..\Vives.Services.Extentions\Vives.Services.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

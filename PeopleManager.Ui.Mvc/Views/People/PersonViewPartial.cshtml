@@ -1,17 +1,16 @@
-﻿@using PeopleManager.Model
-@model Person
+﻿@model PersonResults
 
 @{
-    Person p = Model;
+    PersonResults p = Model;
 }
 <tr>
     <td>@p.FirstName</td>
     <td>@p.LastName</td>
     <td><a href="mailto:@p.Email">@p.Email</a></td>
     <td>
-        @if (p.Organization != null)
+        @if (p.OrganizationId != null)
         {
-            @p.Organization.Name
+            @p.OrganizationName
         }
         else
         {
@@ -21,6 +20,8 @@
     <td>
         <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-primary">Edit</a> |
         <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-danger">Delete</a>
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@Model.Id" data-name="@p.FirstName @p.LastName" data-mode="delete">Delete with modal</button>
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="@Model.Id" data-name="@p.FirstName @p.LastName" data-mode="delete">
+        @SvgIconLibrary.Helpers.RenderSvgIcon("DeleteUser")
+    </button>
 </tr>
 

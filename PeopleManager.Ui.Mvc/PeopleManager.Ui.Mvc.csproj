@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PeopleManager.Services\PeopleManager.Services.csproj" />
+    <ProjectReference Include="..\PeopleManager.Sdk\PeopleManager.Sdk.csproj" />
+    <ProjectReference Include="..\SvgIconLibrary\SvgIconLibrary.csproj" />
+    <ProjectReference Include="..\Vives.Presentation.Authentication\Vives.Presentation.Authentication.csproj" />
   </ItemGroup>
 
 </Project>
