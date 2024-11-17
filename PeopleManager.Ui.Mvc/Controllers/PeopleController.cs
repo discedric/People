@@ -1,5 +1,4 @@
-﻿using ASP;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PeopleManager.Core;
 using PeopleManager.Model;
@@ -93,7 +92,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
 
         private ViewResult createActionView(Person? person = null)
         {
-            ViewBag.Organizations = _DbContext.Organizations.ToList();
+            ViewBag.Organizations = _organizationService.Find();
             return View(person);
         }
     }
