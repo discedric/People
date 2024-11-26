@@ -11,6 +11,7 @@ using Vives.Services.Extensions;
 
 namespace PeopleManager.Services
 {
+    public class OrganizationService
     public class OrganizationService(PeopleManagerDbContext dbContext)
     {
         private readonly PeopleManagerDbContext _dbContext = dbContext;

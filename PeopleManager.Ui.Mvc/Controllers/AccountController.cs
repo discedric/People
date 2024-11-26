@@ -38,7 +38,7 @@ namespace PeopleManager.Ui.Mvc.Controllers
             if (!ModelState.IsValid)
             {
                 return View();
-            }
+        }
 
             var request = new SignInRequest
             {
@@ -103,11 +103,11 @@ namespace PeopleManager.Ui.Mvc.Controllers
             if (!result.IsSuccess || result.Token is null)
             {
                 foreach (var error in result.Messages)
-                {
+        {
                     ModelState.AddModelError("", error.Message);
                 }
-                return View(model);
-            }
+            return View(model);
+        }
 
             await InternalSignIn(model.Email);
             _tokenStore.SetToken(result.Token);
